@@ -386,6 +386,28 @@ class RvmCliTools {
     }
 
     /**
+     * Get GEM_HOME path for a given ruby version
+     *
+     * @example
+     *
+     * getGemHomePath("ruby-3.3.10")
+     * // => "C:/ProgramData/rvm/envs/ruby-3.3.10/lib/ruby/gems/3.3.0"
+     *
+     * @param {string} version e.g. "ruby-3.3.10"
+     * @return {string|null}
+     */
+    static getGemHomePath(version) {
+        const self = RvmCliTools;
+        const install_path = self.config().envs[version];
+        if (!install_path) { return null; }
+        const raw_version = version.replace('ruby-', '');
+        const match = raw_version.match(/^(\d+)\.(\d+)\./);
+        if (!match) { return null; }
+        const abi_version = `${match[1]}.${match[2]}.0`;
+        return `${install_path}/lib/ruby/gems/${abi_version}`;
+    }
+
+    /**
      * Print line with trailing new line
      *
      * @param {string} text
