@@ -89,6 +89,8 @@ class RvmCliInit {
             self._writeToSecondLine(cmd_path_without_extension, `echo "rvm-windows does only run on windows platforms!"; exit 1`);
             self._writeToSecondLine(cmd_path_without_extension + '.ps1', `& "${File.expandPath(RvmCliTools.rvmRootPath() + '/src/tools/current/ps_rvm_prepend.ps1')}"`);
             self._writeToSecondLine(cmd_path_without_extension + '.cmd', `call "${File.expandPath(RvmCliTools.rvmRootPath() + '/src/tools/current/cmd_rvm_prepend.bat')}"`);
+            self._writeToLastLine(cmd_path_without_extension + '.ps1', `& "${File.expandPath(RvmCliTools.rvmRootPath() + '/src/tools/current/ps_rvm_append.ps1')}"`);
+            self._writeToLastLine(cmd_path_without_extension + '.cmd', `call "${File.expandPath(RvmCliTools.rvmRootPath() + '/src/tools/current/cmd_rvm_append.bat')}"`);
             FileUtils.mkdirP(RvmCliTools.rvmSessionsDir());
         }
         if(!process.env.RVM_SESSION && process.argv[2] !== "init") {
@@ -134,6 +136,24 @@ class RvmCliInit {
             const lines = content.split('\n');
             if (lines[1].trim() !== line.trim()) {
                 lines.splice(1, 0, line);
+                File.write(file, lines.join('\n'));
+            }
+        } else {
+            throw new Error(`Could not find file '${file}'`);
+        }
+    }
+
+    static _writeToLastLine(file, line) {
+        if (File.isExisting(file)) {
+            const content = File.read(file);
+            const lines = content.split('\n');
+            // find the last non-empty line for the idempotency check
+            let last_content_index = lines.length - 1;
+            while (last_content_index > 0 && lines[last_content_index].trim() === '') {
+                last_content_index--;
+            }
+            if (lines[last_content_index].trim() !== line.trim()) {
+                lines.push(line);
                 File.write(file, lines.join('\n'));
             }
         } else {

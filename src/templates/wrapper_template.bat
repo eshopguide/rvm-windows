@@ -5,6 +5,7 @@
  SET "ORIGINAL_HTTP_PROXY=%HTTP_PROXY%"
  SET "ORIGINAL_HTTPS_PROXY=%HTTPS_PROXY%"
  SET "ORIGINAL_RUBYPATH=%RUBYPATH%"
+ SET "ORIGINAL_GEM_HOME=%GEM_HOME%"
  SET "ORIGINAL_PATH=%PATH%"
 
  SET "NODE_JS_RUNTIME_PATH={{node_js_runtime_path}}"
@@ -19,6 +20,11 @@
  for /f "delims=" %%a in ('%NODE_JS_RUNTIME_PATH% "%RVM_ROOT_PATH%\src\wrapper\wrapper_rubypath.js" "%CD%" %~n0') do SET "return_rubypath=%%a"
  REM echo Returned path: "%return_rubypath%"
  call %return_rubypath%
+
+ REM GEM_HOME
+ for /f "delims=" %%g in ('%NODE_JS_RUNTIME_PATH% "%RVM_ROOT_PATH%\src\wrapper\wrapper_gemhome.js" "%CD%" %~n0') do SET "return_gemhome=%%g"
+ REM echo Returned gem home: "%return_gemhome%"
+ call %return_gemhome%
 
  REM PROXY
  for /f "delims=" %%b in ('%NODE_JS_RUNTIME_PATH% "%RVM_ROOT_PATH%\src\wrapper\wrapper_proxy.js" "%CD%" %~n0') do SET "return_proxy=%%b"
@@ -39,6 +45,7 @@
  SET "HTTP_PROXY=%ORIGINAL_HTTP_PROXY%"
  SET "HTTPS_PROXY=%ORIGINAL_HTTPS_PROXY%"
  SET "RUBYPATH=%ORIGINAL_RUBYPATH%"
+ SET "GEM_HOME=%ORIGINAL_GEM_HOME%"
  SET "PATH=%ORIGINAL_PATH%"
 
  REM AFTER COMMAND
